@@ -23,5 +23,14 @@ if [ -n "$AUTHORIZED_KEYS" ]; then
     echo "Authorized keys set for user $SSH_USERNAME"
 fi
 
+
+if [ "$SSH_ADMIN" = "yes" ]; then
+    usermod -aG sudo $SSH_USERNAME
+    sed -i.bak -e 's/%sudo.*/%sudo ALL=(ALL:ALL) NOPASSWD:ALL/' /etc/sudoers
+fi
+
+env | grep SSH_ > /tmp/ssh.txt
+
+
 # Start the SSH server
 exec /usr/sbin/sshd -D

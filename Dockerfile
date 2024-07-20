@@ -1,14 +1,17 @@
 # Use an official Ubuntu base image
 FROM ubuntu:24.04
 
+SHELL ["/bin/bash", "-c"]
+
 # Set environment variables to avoid interactive prompts during installation
 ENV DEBIAN_FRONTEND=noninteractive
 ENV SSH_USERNAME=ubuntu
+ENV SSH_ADMIN=no
 ENV PASSWORD=changeme
 
 # Install OpenSSH server and clean up
 RUN apt-get update \
-    && apt-get install -y openssh-server iputils-ping telnet iproute2 \
+    && apt-get install -y openssh-server iputils-ping telnet iproute2 sudo \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
