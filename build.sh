@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-VERSION=0.1
+# Initial version with sudo capability:
+# VERSION=0.1
+VERSION=0.2
 
 docker build -t mjbright/ubuntu-sshd:$VERSION .
 
