@@ -5,13 +5,14 @@ SHELL ["/bin/bash", "-c"]
 
 # Set environment variables to avoid interactive prompts during installation
 ENV DEBIAN_FRONTEND=noninteractive
-ENV SSH_USERNAME=ubuntu
+ENV SSH_USERNAME="ubuntu"
+ENV SSHD_CONFIG_ADDITIONAL=""
 ENV SSH_ADMIN=no
-ENV PASSWORD=changeme
+ENV SSH_PASSWORD=changeme
 
-# Install OpenSSH server and clean up
+# Install OpenSSH server, clean up, create directories, set permissions, and configure SSH
 RUN apt-get update \
-    && apt-get install -y openssh-server iputils-ping telnet iproute2 sudo \
+    && apt-get install -y iproute2 iputils-ping openssh-server telnet sudo \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -20,10 +21,12 @@ RUN mkdir -p /run/sshd \
     && chmod 755 /run/sshd
 
 # Check if the user exists before trying to create it
-RUN if ! id -u $SSH_USERNAME > /dev/null 2>&1; then useradd -ms /bin/bash $SSH_USERNAME; fi
+RUN if ! id -u "$SSH_USERNAME" > /dev/null 2>&1; then useradd -ms /bin/bash "$SSH_USERNAME"; fi
 
 # Set up SSH configuration
-RUN mkdir -p /home/$SSH_USERNAME/.ssh && chown $SSH_USERNAME:$SSH_USERNAME /home/$SSH_USERNAME/.ssh \
+RUN mkdir -p /home/"$SSH_USERNAME"/.ssh \
+    && chown -R "$SSH_USERNAME":"$SSH_USERNAME" /home/"$SSH_USERNAME" \
+    && chmod 755 /home/"$SSH_USERNAME" \
     && echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config \
     && echo "PermitRootLogin no" >> /etc/ssh/sshd_config
 
